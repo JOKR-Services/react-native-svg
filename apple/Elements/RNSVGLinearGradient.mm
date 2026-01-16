@@ -183,17 +183,17 @@ using namespace facebook::react;
 {
   self.dirty = false;
 
-  // if (self.x1 == nil || self.x2 == nil || self.y1 == nil || self.y2 == nil) {
-  NSString *logMessage =
-      [NSString stringWithFormat:@"LinearGradient parsed: name=%@, units=%d, x1=%@, y1=%@, x2=%@, y2=%@",
-                                 self.name ?: @"nil",
-                                 self.gradientUnits,
-                                 self.x1,
-                                 self.y1,
-                                 self.x2,
-                                 self.y2];
-  [RNSVGSvgViewModule logMessage:logMessage];
-  // }
+  if (self.x1 == nil || self.x2 == nil || self.y1 == nil || self.y2 == nil) {
+    NSString *logMessage = [NSString
+        stringWithFormat:@"LinearGradient parsed with nil values: name=%@, units=%d, x1=%@, y1=%@, x2=%@, y2=%@",
+                         self.name ?: @"nil",
+                         self.gradientUnits,
+                         self.x1,
+                         self.y1,
+                         self.x2,
+                         self.y2];
+    [RNSVGSvgViewModule logMessage:logMessage];
+  }
 
   RNSVGLength *x1 = self.x1 ?: [RCTConvert RNSVGLength:@"0%"];
   RNSVGLength *y1 = self.y1 ?: [RCTConvert RNSVGLength:@"0%"];
