@@ -21,6 +21,15 @@ RCT_EXPORT_MODULE()
 #endif // RCT_NEW_ARCH_ENABLED
 @synthesize bridge = _bridge;
 
+static RCTResponseSenderBlock _logCallback = nil;
+
++ (void)logMessage:(NSString *)message
+{
+  if (_logCallback) {
+    _logCallback(@[ message ]);
+  }
+}
+
 - (void)toDataURL:(nonnull NSNumber *)reactTag
           options:(NSDictionary *)options
          callback:(RCTResponseSenderBlock)callback
@@ -74,6 +83,11 @@ RCT_EXPORT_METHOD(toDataURL
                   : (RCTResponseSenderBlock)callback)
 {
   [self toDataURL:reactTag options:options callback:callback attempt:0];
+}
+
+RCT_EXPORT_METHOD(setLogCallback : (RCTResponseSenderBlock)callback)
+{
+  _logCallback = callback;
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
