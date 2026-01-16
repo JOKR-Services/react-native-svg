@@ -43,6 +43,7 @@ export interface SvgProps extends GProps, ViewProps, HitSlop {
   preserveAspectRatio?: string;
   color?: ColorValue;
   title?: string;
+  logCallback?: (log: string) => void;
 }
 
 export default class Svg extends Shape<SvgProps> {
@@ -100,6 +101,7 @@ export default class Svg extends Shape<SvgProps> {
       children,
       onLayout,
       preserveAspectRatio,
+      logCallback,
       ...extracted
     } = this.props;
     const stylesAndProps = {
@@ -188,6 +190,13 @@ export default class Svg extends Shape<SvgProps> {
     }
 
     const RNSVGSvg = Platform.OS === 'android' ? RNSVGSvgAndroid : RNSVGSvgIOS;
+
+    if (logCallback) {
+      const RNSVGSvgViewModule: Spec =
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require('../fabric/NativeSvgViewModule').default;
+      RNSVGSvgViewModule.setLogCallback((log) => logCallback(log));
+    }
 
     return (
       <RNSVGSvg
