@@ -226,18 +226,24 @@ using namespace facebook::react;
     [RNSVGSvgViewModule logMessage:logMessage];
   }
 
-  RNSVGLength *fx = self.fx ?: [RCTConvert RNSVGLength:@"0%"];
-  RNSVGLength *fy = self.fy ?: [RCTConvert RNSVGLength:@"0%"];
-  RNSVGLength *rx = self.rx ?: [RCTConvert RNSVGLength:@"0%"];
-  RNSVGLength *ry = self.ry ?: [RCTConvert RNSVGLength:@"0%"];
-  RNSVGLength *cx = self.cx ?: [RCTConvert RNSVGLength:@"0%"];
-  RNSVGLength *cy = self.cy ?: [RCTConvert RNSVGLength:@"0%"];
+  RNSVGLength *fx = self.fx ?: [RCTConvert RNSVGLength:@"0"];
+  RNSVGLength *fy = self.fy ?: [RCTConvert RNSVGLength:@"0"];
+  RNSVGLength *rx = self.rx ?: [RCTConvert RNSVGLength:@"0"];
+  RNSVGLength *ry = self.ry ?: [RCTConvert RNSVGLength:@"0"];
+  RNSVGLength *cx = self.cx ?: [RCTConvert RNSVGLength:@"0"];
+  RNSVGLength *cy = self.cy ?: [RCTConvert RNSVGLength:@"0"];
 
   NSArray<RNSVGLength *> *points = @[ fx, fy, rx, ry, cx, cy ];
   RNSVGPainter *painter = [[RNSVGPainter alloc] initWithPointsArray:points];
   [painter setUnits:self.gradientUnits];
   [painter setTransform:self.gradientTransform];
-  [painter setRadialGradientColors:self.gradient];
+
+  if (self.gradient != nil && [self.gradient count] > 0) {
+    [painter setRadialGradientColors:self.gradient];
+  } else {
+    NSString *logMessage = [NSString stringWithFormat:@"RadialGradient parsed with nil gradient: name=%@", self.name];
+    [RNSVGSvgViewModule logMessage:logMessage];
+  }
 
   if (self.gradientUnits == kRNSVGUnitsUserSpaceOnUse) {
     [painter setUserSpaceBoundingBox:[self.svgView getContextBounds]];

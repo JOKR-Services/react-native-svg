@@ -185,27 +185,33 @@ using namespace facebook::react;
 
   if (self.x1 == nil || self.x2 == nil || self.y1 == nil || self.y2 == nil) {
     NSString *name = self.name ?: @"nil";
-    NSString *logMessage = [NSString
-        stringWithFormat:@"LinearGradient parsed with nil values: name=%@, units=%d, x1=%@, y1=%@, x2=%@, y2=%@",
-                         name,
-                         self.gradientUnits,
-                         self.x1,
-                         self.y1,
-                         self.x2,
-                         self.y2];
+    NSString *logMessage =
+        [NSString stringWithFormat:@"LinearGradient parsed with nil values: name=%@, x1=%@, y1=%@, x2=%@, y2=%@",
+                                   name,
+                                   self.x1,
+                                   self.y1,
+                                   self.x2,
+                                   self.y2];
     [RNSVGSvgViewModule logMessage:logMessage];
   }
 
-  RNSVGLength *x1 = self.x1 ?: [RCTConvert RNSVGLength:@"0%"];
-  RNSVGLength *y1 = self.y1 ?: [RCTConvert RNSVGLength:@"0%"];
-  RNSVGLength *x2 = self.x2 ?: [RCTConvert RNSVGLength:@"0%"];
-  RNSVGLength *y2 = self.y2 ?: [RCTConvert RNSVGLength:@"0%"];
+  RNSVGLength *x1 = self.x1 ?: [RCTConvert RNSVGLength:@"0"];
+  RNSVGLength *y1 = self.y1 ?: [RCTConvert RNSVGLength:@"0"];
+  RNSVGLength *x2 = self.x2 ?: [RCTConvert RNSVGLength:@"0"];
+  RNSVGLength *y2 = self.y2 ?: [RCTConvert RNSVGLength:@"0"];
 
-  NSArray<RNSVGLength *> *points = @[ self.x1, self.y1, self.x2, self.y2 ];
+  NSArray<RNSVGLength *> *points = @[ x1, y1, x2, y2 ];
   RNSVGPainter *painter = [[RNSVGPainter alloc] initWithPointsArray:points];
+
   [painter setUnits:self.gradientUnits];
   [painter setTransform:self.gradientTransform];
-  [painter setLinearGradientColors:self.gradient];
+
+  if (self.gradient != nil && [self.gradient count] > 0) {
+    [painter setLinearGradientColors:self.gradient];
+  } else {
+    NSString *logMessage = [NSString stringWithFormat:@"LinearGradient parsed with nil gradient: name=%@", self.name];
+    [RNSVGSvgViewModule logMessage:logMessage];
+  }
 
   if (self.gradientUnits == kRNSVGUnitsUserSpaceOnUse) {
     [painter setUserSpaceBoundingBox:[self.svgView getContextBounds]];
