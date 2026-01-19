@@ -184,9 +184,10 @@ using namespace facebook::react;
   self.dirty = false;
 
   if (self.x1 == nil || self.x2 == nil || self.y1 == nil || self.y2 == nil) {
+    NSString *name = self.name ?: @"nil";
     NSString *logMessage = [NSString
         stringWithFormat:@"LinearGradient parsed with nil values: name=%@, units=%d, x1=%@, y1=%@, x2=%@, y2=%@",
-                         self.name ?: @"nil",
+                         name,
                          self.gradientUnits,
                          self.x1,
                          self.y1,
@@ -200,7 +201,7 @@ using namespace facebook::react;
   RNSVGLength *x2 = self.x2 ?: [RCTConvert RNSVGLength:@"0%"];
   RNSVGLength *y2 = self.y2 ?: [RCTConvert RNSVGLength:@"0%"];
 
-  NSArray<RNSVGLength *> *points = @[ x1, y1, x2, y2 ];
+  NSArray<RNSVGLength *> *points = @[ self.x1, self.y1, self.x2, self.y2 ];
   RNSVGPainter *painter = [[RNSVGPainter alloc] initWithPointsArray:points];
   [painter setUnits:self.gradientUnits];
   [painter setTransform:self.gradientTransform];
