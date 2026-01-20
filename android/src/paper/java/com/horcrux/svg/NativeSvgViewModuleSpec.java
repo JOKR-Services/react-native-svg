@@ -38,4 +38,8 @@ public abstract class NativeSvgViewModuleSpec extends ReactContextBaseJavaModule
   @ReactMethod
   @DoNotStrip
   public abstract void toDataURL(@Nullable Double tag, @Nullable ReadableMap options, @Nullable Callback callback);
+
+  @ReactMethod
+  @DoNotStrip
+  public abstract void setLogCallback(Callback callback);
 }
