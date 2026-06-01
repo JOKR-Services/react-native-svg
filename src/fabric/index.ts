@@ -28,8 +28,10 @@ import RNSVGFeFlood from './FeFloodNativeComponent';
 import RNSVGFeGaussianBlur from './FeGaussianBlurNativeComponent';
 import RNSVGFeMerge from './FeMergeNativeComponent';
 import RNSVGFeOffset from './FeOffsetNativeComponent';
+import RNSVGSvgViewModule from './NativeSvgViewModule';
 
 export {
+  RNSVGSvgViewModule,
   RNSVGCircle,
   RNSVGClipPath,
   RNSVGDefs,

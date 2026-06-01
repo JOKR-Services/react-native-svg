@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 #import "RNSVGRadialGradient.h"
+#import "RNSVGSvgViewModule.h"
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <React/RCTConversions.h>
@@ -208,11 +209,41 @@ using namespace facebook::react;
 - (void)parseReference
 {
   self.dirty = false;
-  NSArray<RNSVGLength *> *points = @[ self.fx, self.fy, self.rx, self.ry, self.cx, self.cy ];
+
+  if (self.fx == nil || self.fy == nil || self.rx == nil || self.ry == nil || self.cx == nil || self.cy == nil) {
+    NSString *name = self.name ?: @"nil";
+    NSString *logMessage = [NSString
+        stringWithFormat:
+            @"RadialGradient parsed with nil values: name=%@, units=%d, fx=%@, fy=%@, rx=%@, ry=%@, cx=%@, cy=%@",
+            name,
+            self.gradientUnits,
+            self.fx,
+            self.fy,
+            self.rx,
+            self.ry,
+            self.cx,
+            self.cy];
+    [RNSVGSvgViewModule logMessage:logMessage];
+  }
+
+  RNSVGLength *fx = self.fx ?: [RCTConvert RNSVGLength:@"0"];
+  RNSVGLength *fy = self.fy ?: [RCTConvert RNSVGLength:@"0"];
+  RNSVGLength *rx = self.rx ?: [RCTConvert RNSVGLength:@"0"];
+  RNSVGLength *ry = self.ry ?: [RCTConvert RNSVGLength:@"0"];
+  RNSVGLength *cx = self.cx ?: [RCTConvert RNSVGLength:@"0"];
+  RNSVGLength *cy = self.cy ?: [RCTConvert RNSVGLength:@"0"];
+
+  NSArray<RNSVGLength *> *points = @[ fx, fy, rx, ry, cx, cy ];
   RNSVGPainter *painter = [[RNSVGPainter alloc] initWithPointsArray:points];
   [painter setUnits:self.gradientUnits];
   [painter setTransform:self.gradientTransform];
-  [painter setRadialGradientColors:self.gradient];
+
+  if (self.gradient != nil && [self.gradient count] > 0) {
+    [painter setRadialGradientColors:self.gradient];
+  } else {
+    NSString *logMessage = [NSString stringWithFormat:@"RadialGradient parsed with nil gradient: name=%@", self.name];
+    [RNSVGSvgViewModule logMessage:logMessage];
+  }
 
   if (self.gradientUnits == kRNSVGUnitsUserSpaceOnUse) {
     [painter setUserSpaceBoundingBox:[self.svgView getContextBounds]];

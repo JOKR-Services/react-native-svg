@@ -21,6 +21,44 @@ RCT_EXPORT_MODULE()
 #endif // RCT_NEW_ARCH_ENABLED
 @synthesize bridge = _bridge;
 
+static RCTResponseSenderBlock _logCallback = nil;
+static NSMutableArray<NSString *> *_pendingMessages = nil;
+static dispatch_queue_t _logQueue = nil;
+static BOOL _callbackUsed = NO;
+
++ (void)initialize
+{
+  if (self == [RNSVGSvgViewModule class]) {
+    _pendingMessages = [NSMutableArray array];
+    _logQueue = dispatch_queue_create("com.horcrux.svg.log", DISPATCH_QUEUE_SERIAL);
+  }
+}
+
++ (void)logMessage:(NSString *)message
+{
+  if (!message) {
+    return;
+  }
+
+  dispatch_async(_logQueue, ^{
+    if (_logCallback && !_callbackUsed) {
+      // Mark callback as used and call it
+      _callbackUsed = YES;
+      RCTResponseSenderBlock callback = _logCallback;
+
+      dispatch_async(dispatch_get_main_queue(), ^{
+        callback(@[ message ]);
+      });
+    } else if (_logCallback && _callbackUsed) {
+      // Callback already used, queue the message
+      [_pendingMessages addObject:message];
+    } else {
+      // No callback set yet, queue the message
+      [_pendingMessages addObject:message];
+    }
+  });
+}
+
 - (void)toDataURL:(nonnull NSNumber *)reactTag
           options:(NSDictionary *)options
          callback:(RCTResponseSenderBlock)callback
@@ -74,6 +112,37 @@ RCT_EXPORT_METHOD(toDataURL
                   : (RCTResponseSenderBlock)callback)
 {
   [self toDataURL:reactTag options:options callback:callback attempt:0];
+}
+
+RCT_EXPORT_METHOD(setLogCallback : (RCTResponseSenderBlock)callback)
+{
+  dispatch_async(_logQueue, ^{
+    // Reset the callback state when a new callback is set
+    _logCallback = callback;
+    _callbackUsed = NO;
+
+    // Process any pending messages with the new callback
+    if (callback && [_pendingMessages count] > 0) {
+      NSArray<NSString *> *messages = [_pendingMessages copy];
+      [_pendingMessages removeAllObjects];
+
+      // Only call the callback once with the first message
+      // Subsequent messages will be queued again
+      if ([messages count] > 0) {
+        _callbackUsed = YES;
+        NSString *firstMessage = messages[0];
+        dispatch_async(dispatch_get_main_queue(), ^{
+          callback(@[ firstMessage ]);
+        });
+
+        // Queue remaining messages
+        if ([messages count] > 1) {
+          NSArray<NSString *> *remainingMessages = [messages subarrayWithRange:NSMakeRange(1, [messages count] - 1)];
+          [_pendingMessages addObjectsFromArray:remainingMessages];
+        }
+      }
+    }
+  });
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED

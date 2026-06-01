@@ -18,4 +18,7 @@
 #else
                                 <RCTBridgeModule>
 #endif
+
++ (void)logMessage:(NSString *)message;
+
 @end

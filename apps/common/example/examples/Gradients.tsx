@@ -258,12 +258,17 @@ FillGradientInRect.title = 'Fill a radial gradient inside a rect and stroke it';
 const icon = (
   <Svg height="30" width="30" viewBox="0 0 20 20">
     <Defs>
-      <LinearGradient id="icon-grad" x1="0" y1="0" x2="0" y2="100%">
+      <LinearGradient
+        id="icon-grad-gradient-tsx"
+        x1="0"
+        y1="0"
+        x2="0"
+        y2="100%">
         <Stop offset="0" stopColor="blue" stopOpacity="1" />
         <Stop offset="100%" stopColor="red" stopOpacity="1" />
       </LinearGradient>
     </Defs>
-    <Circle cx="10" cy="10" r="10" fill="url(#icon-grad)" />
+    <Circle cx="10" cy="10" r="10" fill="url(#icon-grad-gradient-tsx)" />
   </Svg>
 );
 const samples = [

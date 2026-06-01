@@ -10,6 +10,7 @@ export interface Spec extends TurboModule {
     options?: Object,
     callback?: (base64: string) => void
   ): void;
+  setLogCallback(callback: (log: string) => void): void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNSVGSvgViewModule');

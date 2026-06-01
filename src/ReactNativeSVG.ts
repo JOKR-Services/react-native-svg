@@ -21,6 +21,7 @@ import {
 import { fetchText } from './utils/fetchData';
 
 import {
+  RNSVGSvgViewModule,
   RNSVGCircle,
   RNSVGClipPath,
   RNSVGDefs,
@@ -121,6 +122,7 @@ export {
   camelCase,
   fetchText,
   parse,
+  RNSVGSvgViewModule,
   RNSVGCircle,
   RNSVGClipPath,
   RNSVGDefs,

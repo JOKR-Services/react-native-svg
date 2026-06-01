@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import {Image, StyleSheet, View} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {Circle, G, Line, Path, Rect, Svg} from 'react-native-svg';
 
 const styles = StyleSheet.create({
@@ -83,9 +83,13 @@ SvgViewbox.title =
   'SVG with `viewBox="40 20 100 40" and preserveAspectRatio="none"';
 
 function SvgLayout() {
+  const logCaCallback = (log: string) => {
+    console.log('debug-now', 'SVGLayout logCaCallback:', log);
+  };
+
   return (
     <View style={styles.container}>
-      <Svg style={styles.svg}>
+      <Svg style={styles.svg} logCallback={logCaCallback}>
         <Rect
           width="80%"
           height="80%"
